@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useNotifications } from '@/hooks/useNotifications';
-import { Bell, Check, CheckCheck, Search, Filter } from 'lucide-react';
+import { Bell, Check, CheckCheck, Search, Filter, AlertCircle } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { formatDistanceToNow } from 'date-fns';
@@ -46,7 +46,7 @@ const NotificationCenter = () => {
     return (
       <div className="space-y-4">
         {[...Array(3)].map((_, i) => (
-          <div key={i} className="skeleton-dark h-20 rounded-lg" />
+          <div key={i} className="bg-crm-secondary h-20 rounded-lg animate-pulse" />
         ))}
       </div>
     );
@@ -58,9 +58,9 @@ const NotificationCenter = () => {
       <div className="flex justify-between items-center">
         <div className="flex items-center space-x-3">
           <Bell className="w-6 h-6 text-crm-electric" />
-          <h2 className="text-2xl font-bold text-crm-text-white">Notifications</h2>
+          <h2 className="text-2xl font-bold text-white">Notifications</h2>
           {unreadCount > 0 && (
-            <Badge variant="destructive" className="bg-red-500">
+            <Badge className="bg-red-500 text-white">
               {unreadCount}
             </Badge>
           )}
@@ -71,7 +71,7 @@ const NotificationCenter = () => {
             onClick={markAllAsRead}
             variant="outline"
             size="sm"
-            className="border-crm-tertiary text-crm-text-secondary hover:text-crm-text-white"
+            className="border-crm-tertiary text-crm-text-secondary hover:text-white hover:bg-crm-tertiary"
           >
             <CheckCheck className="w-4 h-4 mr-2" />
             Mark All Read
@@ -87,31 +87,31 @@ const NotificationCenter = () => {
             placeholder="Search notifications..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="form-control-dark pl-10"
+            className="bg-crm-secondary border-crm-tertiary text-white placeholder:text-gray-400 pl-10 focus:border-crm-electric focus:ring-1 focus:ring-crm-electric"
           />
         </div>
         
         <Select value={filterType} onValueChange={setFilterType}>
-          <SelectTrigger className="w-32 form-control-dark">
-            <SelectValue />
+          <SelectTrigger className="w-32 bg-crm-secondary border-crm-tertiary text-white">
+            <SelectValue placeholder="Type" />
           </SelectTrigger>
           <SelectContent className="bg-crm-tertiary border-crm-tertiary">
-            <SelectItem value="all">All Types</SelectItem>
-            <SelectItem value="info">Info</SelectItem>
-            <SelectItem value="success">Success</SelectItem>
-            <SelectItem value="warning">Warning</SelectItem>
-            <SelectItem value="error">Error</SelectItem>
+            <SelectItem value="all" className="text-white hover:bg-crm-secondary">All Types</SelectItem>
+            <SelectItem value="info" className="text-white hover:bg-crm-secondary">Info</SelectItem>
+            <SelectItem value="success" className="text-white hover:bg-crm-secondary">Success</SelectItem>
+            <SelectItem value="warning" className="text-white hover:bg-crm-secondary">Warning</SelectItem>
+            <SelectItem value="error" className="text-white hover:bg-crm-secondary">Error</SelectItem>
           </SelectContent>
         </Select>
 
         <Select value={filterRead} onValueChange={setFilterRead}>
-          <SelectTrigger className="w-32 form-control-dark">
-            <SelectValue />
+          <SelectTrigger className="w-32 bg-crm-secondary border-crm-tertiary text-white">
+            <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent className="bg-crm-tertiary border-crm-tertiary">
-            <SelectItem value="all">All</SelectItem>
-            <SelectItem value="unread">Unread</SelectItem>
-            <SelectItem value="read">Read</SelectItem>
+            <SelectItem value="all" className="text-white hover:bg-crm-secondary">All</SelectItem>
+            <SelectItem value="unread" className="text-white hover:bg-crm-secondary">Unread</SelectItem>
+            <SelectItem value="read" className="text-white hover:bg-crm-secondary">Read</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -120,16 +120,24 @@ const NotificationCenter = () => {
       <div className="space-y-3">
         {filteredNotifications.length === 0 ? (
           <div className="text-center py-12">
-            <Bell className="w-12 h-12 text-crm-text-secondary mx-auto mb-4" />
-            <p className="text-crm-text-secondary text-lg">No notifications found</p>
+            <div className="w-20 h-20 bg-crm-secondary rounded-full flex items-center justify-center mx-auto mb-4">
+              <Bell className="w-10 h-10 text-crm-text-secondary" />
+            </div>
+            <h3 className="text-lg font-medium text-white mb-2">No notifications found</h3>
+            <p className="text-crm-text-secondary">
+              {notifications.length === 0 
+                ? "You don't have any notifications yet" 
+                : "Try adjusting your search or filters"
+              }
+            </p>
           </div>
         ) : (
           filteredNotifications.map((notification) => (
             <div
               key={notification.id}
-              className={`crm-card p-4 border-l-4 ${getNotificationColor(notification.type)} ${
-                !notification.is_read ? 'bg-crm-tertiary/50' : ''
-              } hover:bg-crm-tertiary/30 transition-colors cursor-pointer`}
+              className={`bg-crm-secondary border border-crm-tertiary rounded-lg p-4 border-l-4 ${getNotificationColor(notification.type)} ${
+                !notification.is_read ? 'bg-crm-tertiary/30' : ''
+              } hover:bg-crm-tertiary/20 transition-all duration-300 cursor-pointer`}
               onClick={() => !notification.is_read && markAsRead(notification.id)}
             >
               <div className="flex items-start justify-between">
@@ -137,20 +145,35 @@ const NotificationCenter = () => {
                   <div className="flex items-center space-x-3 mb-2">
                     <span className="text-lg">{getNotificationIcon(notification.type)}</span>
                     <h3 className={`font-semibold ${
-                      !notification.is_read ? 'text-crm-text-white' : 'text-crm-text-secondary'
+                      !notification.is_read ? 'text-white' : 'text-crm-text-secondary'
                     }`}>
                       {notification.title}
                     </h3>
                     {!notification.is_read && (
-                      <div className="w-2 h-2 bg-crm-electric rounded-full" />
+                      <div className="w-2 h-2 bg-crm-electric rounded-full animate-pulse" />
                     )}
                   </div>
-                  <p className="text-crm-text-secondary text-sm mb-2">
+                  <p className="text-crm-text-secondary text-sm mb-3 leading-relaxed">
                     {notification.message}
                   </p>
-                  <p className="text-xs text-crm-text-secondary">
-                    {formatDistanceToNow(new Date(notification.created_at), { addSuffix: true })}
-                  </p>
+                  <div className="flex items-center justify-between">
+                    <p className="text-xs text-crm-text-secondary">
+                      {formatDistanceToNow(new Date(notification.created_at), { addSuffix: true })}
+                    </p>
+                    {notification.action_url && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-crm-electric hover:text-blue-400 text-xs"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          window.open(notification.action_url, '_blank');
+                        }}
+                      >
+                        View Details
+                      </Button>
+                    )}
+                  </div>
                 </div>
                 
                 {!notification.is_read && (
@@ -161,7 +184,7 @@ const NotificationCenter = () => {
                     }}
                     variant="ghost"
                     size="sm"
-                    className="text-crm-text-secondary hover:text-crm-text-white"
+                    className="text-crm-text-secondary hover:text-white ml-4"
                   >
                     <Check className="w-4 h-4" />
                   </Button>
@@ -171,6 +194,26 @@ const NotificationCenter = () => {
           ))
         )}
       </div>
+
+      {/* Empty state for when there are no notifications at all */}
+      {notifications.length === 0 && !loading && (
+        <div className="text-center py-16">
+          <div className="w-24 h-24 bg-crm-secondary rounded-full flex items-center justify-center mx-auto mb-6">
+            <AlertCircle className="w-12 h-12 text-crm-text-secondary" />
+          </div>
+          <h3 className="text-xl font-medium text-white mb-3">All caught up!</h3>
+          <p className="text-crm-text-secondary mb-6 max-w-md mx-auto">
+            You don't have any notifications right now. We'll notify you when there's something important to see.
+          </p>
+          <Button
+            onClick={() => window.location.reload()}
+            variant="outline"
+            className="border-crm-electric text-crm-electric hover:bg-crm-electric hover:text-white"
+          >
+            Refresh
+          </Button>
+        </div>
+      )}
     </div>
   );
 };

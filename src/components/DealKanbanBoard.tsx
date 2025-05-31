@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Plus } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -137,7 +136,7 @@ const DealKanbanBoard = () => {
     }
   };
 
-  const handleConfirmStageChange = async (note: string) => {
+  const handleConfirmStageChange = async (note: string, probability?: number) => {
     const { dealId } = stageChangeDialog;
     const deal = deals.find(d => d.id === dealId);
     const targetStage = pipelineStages.find(s => s.name === stageChangeDialog.toStage)?.id;
@@ -150,15 +149,22 @@ const DealKanbanBoard = () => {
         ? `${currentNotes}\n\n${stageChangeNote}`
         : stageChangeNote;
 
-      await updateDeal(dealId, { 
+      const updateData: any = { 
         stage: targetStage,
         notes: updatedNotes,
         days_in_stage: 0  // Reset days in stage when moved
-      });
+      };
+
+      // Add probability if provided
+      if (probability !== undefined) {
+        updateData.probability = probability;
+      }
+
+      await updateDeal(dealId, updateData);
 
       toast({
         title: "Deal moved",
-        description: `${deal.name} moved to ${stageChangeDialog.toStage}`
+        description: `${deal.name} moved to ${stageChangeDialog.toStage}${probability !== undefined ? ` (${probability}% probability)` : ''}`
       });
     }
     

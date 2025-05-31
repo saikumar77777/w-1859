@@ -25,6 +25,7 @@ const Deals = () => {
     probability: 50
   });
 
+  // This will be used to filter deals in the future if needed
   const filteredDeals = deals.filter(deal => {
     const matchesSearch = deal.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          deal.company?.toLowerCase().includes(searchTerm.toLowerCase());
@@ -170,7 +171,7 @@ const Deals = () => {
             <Select value={filterStage} onValueChange={setFilterStage}>
               <SelectTrigger className="w-48 bg-crm-secondary border-crm-tertiary text-white">
                 <Filter className="w-4 h-4 mr-2" />
-                <SelectValue />
+                <SelectValue placeholder="Filter by stage" />
               </SelectTrigger>
               <SelectContent className="bg-crm-tertiary border-crm-tertiary">
                 <SelectItem value="all" className="text-white hover:bg-crm-secondary">All Stages</SelectItem>
