@@ -6,19 +6,19 @@ import { useToast } from '@/hooks/use-toast';
 
 export interface Deal {
   id: string;
-  contact_id?: string;
   name: string;
-  company?: string;
+  company: string | null;
   value: number;
-  stage: 'prospecting' | 'qualification' | 'proposal' | 'negotiation' | 'closed-won' | 'closed-lost';
-  priority: 'critical' | 'high' | 'medium' | 'low';
-  probability: number;
-  expected_close_date?: string;
-  days_in_stage: number;
-  last_activity?: string;
-  notes?: string;
+  priority: string | null;
+  stage: string;
+  days_in_stage: number | null;
+  last_activity: string | null;
   created_at: string;
   updated_at: string;
+  contact_id: string | null;
+  expected_close_date: string | null;
+  probability: number | null;
+  notes: string | null;
 }
 
 export const useDeals = () => {
@@ -34,7 +34,6 @@ export const useDeals = () => {
       const { data, error } = await supabase
         .from('deals')
         .select('*')
-        .eq('user_id', user.id)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -51,13 +50,16 @@ export const useDeals = () => {
     }
   };
 
-  const createDeal = async (dealData: Omit<Deal, 'id' | 'created_at' | 'updated_at'>) => {
+  const createDeal = async (dealData: Partial<Deal>) => {
     if (!user) return;
 
     try {
       const { data, error } = await supabase
         .from('deals')
-        .insert([{ ...dealData, user_id: user.id }])
+        .insert([{
+          ...dealData,
+          user_id: user.id
+        }])
         .select()
         .single();
 
@@ -89,39 +91,12 @@ export const useDeals = () => {
 
       if (error) throw error;
       setDeals(prev => prev.map(deal => deal.id === id ? data : deal));
-      toast({
-        title: "Success",
-        description: "Deal updated successfully"
-      });
       return data;
     } catch (error: any) {
       console.error('Error updating deal:', error);
       toast({
         title: "Error",
         description: "Failed to update deal",
-        variant: "destructive"
-      });
-    }
-  };
-
-  const deleteDeal = async (id: string) => {
-    try {
-      const { error } = await supabase
-        .from('deals')
-        .delete()
-        .eq('id', id);
-
-      if (error) throw error;
-      setDeals(prev => prev.filter(deal => deal.id !== id));
-      toast({
-        title: "Success",
-        description: "Deal deleted successfully"
-      });
-    } catch (error: any) {
-      console.error('Error deleting deal:', error);
-      toast({
-        title: "Error",
-        description: "Failed to delete deal",
         variant: "destructive"
       });
     }
@@ -136,7 +111,6 @@ export const useDeals = () => {
     loading,
     createDeal,
     updateDeal,
-    deleteDeal,
     refetch: fetchDeals
   };
 };

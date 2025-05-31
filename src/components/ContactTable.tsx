@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { User, Bell, Search, Plus, MoreHorizontal } from 'lucide-react';
-import { useRealContacts } from '@/hooks/useRealContacts';
+import { useContacts } from '@/hooks/useContacts';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -9,7 +9,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import CreateContactDialog from './CreateContactDialog';
 
 const ContactTable = () => {
-  const { contacts, loading, createContact } = useRealContacts();
+  const { contacts, loading, createContact } = useContacts();
   const [searchTerm, setSearchTerm] = useState('');
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
 

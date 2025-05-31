@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Plus } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { useRealDeals } from '@/hooks/useRealDeals';
+import { useDeals } from '@/hooks/useDeals';
 import DealCard from './DealCard';
 import CreateDealDialog from './CreateDealDialog';
 
@@ -15,7 +15,7 @@ interface PipelineStage {
 }
 
 const DealKanbanBoard = () => {
-  const { deals, loading, createDeal, updateDeal } = useRealDeals();
+  const { deals, loading, createDeal, updateDeal } = useDeals();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [selectedStage, setSelectedStage] = useState<string>('');
 

@@ -8,14 +8,14 @@ export interface Contact {
   id: string;
   first_name: string;
   last_name: string;
-  email?: string;
-  phone?: string;
-  company?: string;
-  position?: string;
-  status: 'lead' | 'customer' | 'vip';
-  source?: string;
-  tags?: string[];
-  notes?: string;
+  email: string | null;
+  phone: string | null;
+  company: string | null;
+  position: string | null;
+  status: string | null;
+  source: string | null;
+  notes: string | null;
+  tags: string[] | null;
   created_at: string;
   updated_at: string;
 }
@@ -33,7 +33,6 @@ export const useContacts = () => {
       const { data, error } = await supabase
         .from('contacts')
         .select('*')
-        .eq('user_id', user.id)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -50,13 +49,16 @@ export const useContacts = () => {
     }
   };
 
-  const createContact = async (contactData: Omit<Contact, 'id' | 'created_at' | 'updated_at'>) => {
+  const createContact = async (contactData: Partial<Contact>) => {
     if (!user) return;
 
     try {
       const { data, error } = await supabase
         .from('contacts')
-        .insert([{ ...contactData, user_id: user.id }])
+        .insert([{
+          ...contactData,
+          user_id: user.id
+        }])
         .select()
         .single();
 
@@ -88,39 +90,12 @@ export const useContacts = () => {
 
       if (error) throw error;
       setContacts(prev => prev.map(contact => contact.id === id ? data : contact));
-      toast({
-        title: "Success",
-        description: "Contact updated successfully"
-      });
       return data;
     } catch (error: any) {
       console.error('Error updating contact:', error);
       toast({
         title: "Error",
         description: "Failed to update contact",
-        variant: "destructive"
-      });
-    }
-  };
-
-  const deleteContact = async (id: string) => {
-    try {
-      const { error } = await supabase
-        .from('contacts')
-        .delete()
-        .eq('id', id);
-
-      if (error) throw error;
-      setContacts(prev => prev.filter(contact => contact.id !== id));
-      toast({
-        title: "Success",
-        description: "Contact deleted successfully"
-      });
-    } catch (error: any) {
-      console.error('Error deleting contact:', error);
-      toast({
-        title: "Error",
-        description: "Failed to delete contact",
         variant: "destructive"
       });
     }
@@ -135,7 +110,6 @@ export const useContacts = () => {
     loading,
     createContact,
     updateContact,
-    deleteContact,
     refetch: fetchContacts
   };
 };
