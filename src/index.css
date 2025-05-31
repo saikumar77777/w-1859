@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -118,7 +119,7 @@
   }
   
   .crm-card-hover {
-    @apply transition-all duration-200 hover:shadow-premium-lg hover:-translate-y-1;
+    @apply transition-all duration-300 hover:shadow-premium-lg hover:-translate-y-1;
   }
   
   .status-badge {
@@ -126,7 +127,7 @@
   }
   
   .nav-item {
-    @apply flex items-center px-4 py-3 text-crm-text-secondary hover:text-crm-text-primary hover:bg-crm-tertiary transition-all duration-200 rounded-lg mx-2;
+    @apply flex items-center px-4 py-3 text-crm-text-secondary hover:text-crm-text-primary hover:bg-crm-tertiary transition-all duration-300 rounded-lg mx-2;
   }
   
   .nav-item.active {
@@ -143,23 +144,23 @@
   }
   
   .form-control-dark {
-    @apply bg-crm-secondary border-crm-tertiary text-crm-text-white placeholder:text-crm-text-secondary focus:border-crm-electric focus:ring-1 focus:ring-crm-electric/50;
+    @apply bg-crm-secondary border-crm-tertiary text-crm-text-white placeholder:text-crm-text-secondary focus:border-crm-electric focus:ring-1 focus:ring-crm-electric/50 transition-all duration-200;
   }
   
   .btn-primary {
-    @apply bg-crm-electric hover:bg-crm-electric/90 text-white shadow-electric transition-all duration-200;
+    @apply bg-crm-electric hover:bg-crm-electric/90 text-white shadow-electric transition-all duration-300 transform hover:scale-105;
   }
   
   .btn-success {
-    @apply bg-crm-emerald hover:bg-crm-emerald/90 text-white shadow-emerald transition-all duration-200;
+    @apply bg-crm-emerald hover:bg-crm-emerald/90 text-white shadow-emerald transition-all duration-300;
   }
   
   .btn-danger {
-    @apply bg-red-500 hover:bg-red-600 text-white transition-all duration-200;
+    @apply bg-red-500 hover:bg-red-600 text-white transition-all duration-300;
   }
   
   .btn-ghost {
-    @apply bg-transparent hover:bg-crm-tertiary text-crm-text-secondary hover:text-crm-text-white transition-all duration-200;
+    @apply bg-transparent hover:bg-crm-tertiary text-crm-text-secondary hover:text-crm-text-white transition-all duration-300;
   }
   
   /* KPI Card Styles */
@@ -225,4 +226,72 @@
   .chart-text {
     fill: #cbd5e1 !important;
   }
+
+  /* Smooth Animation Utilities */
+  .animate-fade-in {
+    @apply animate-in fade-in duration-300;
+  }
+  
+  .animate-slide-up {
+    @apply animate-in slide-in-from-bottom-4 duration-300;
+  }
+  
+  .animate-scale {
+    @apply animate-in zoom-in-95 duration-200;
+  }
 }
+
+/* Custom CSS Variables for Smooth Animations */
+:root {
+  --crm-primary: #0f172a;
+  --crm-secondary: #1e293b;
+  --crm-tertiary: #334155;
+  --crm-text-white: #f8fafc;
+  --crm-text-secondary: #cbd5e1;
+  --crm-electric: #3b82f6;
+  --crm-emerald: #10b981;
+  
+  /* Shadow Definitions */
+  --shadow-premium: 0 4px 6px rgba(0, 0, 0, 0.3);
+  --shadow-premium-lg: 0 10px 15px rgba(0, 0, 0, 0.4);
+  --shadow-electric: 0 4px 14px rgba(59, 130, 246, 0.3);
+  --shadow-emerald: 0 4px 14px rgba(16, 185, 129, 0.3);
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--crm-secondary);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--crm-tertiary);
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--crm-electric);
+}
+
+/* Custom utility classes */
+.bg-crm-primary { background-color: var(--crm-primary); }
+.bg-crm-secondary { background-color: var(--crm-secondary); }
+.bg-crm-tertiary { background-color: var(--crm-tertiary); }
+.text-crm-text-white { color: var(--crm-text-white); }
+.text-crm-text-secondary { color: var(--crm-text-secondary); }
+.bg-crm-electric { background-color: var(--crm-electric); }
+.text-crm-electric { color: var(--crm-electric); }
+.bg-crm-emerald { background-color: var(--crm-emerald); }
+.border-crm-tertiary { border-color: var(--crm-tertiary); }
+.border-crm-electric { border-color: var(--crm-electric); }
+.border-crm-emerald { border-color: var(--crm-emerald); }
+.shadow-premium { box-shadow: var(--shadow-premium); }
+.shadow-premium-lg { box-shadow: var(--shadow-premium-lg); }
+.shadow-electric { box-shadow: var(--shadow-electric); }
+.shadow-emerald { box-shadow: var(--shadow-emerald); }

@@ -9,7 +9,287 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      activities: {
+        Row: {
+          contact_id: string | null
+          created_at: string
+          deal_id: string | null
+          description: string
+          due_date: string | null
+          id: string
+          status: string | null
+          type: string
+          user_id: string
+        }
+        Insert: {
+          contact_id?: string | null
+          created_at?: string
+          deal_id?: string | null
+          description: string
+          due_date?: string | null
+          id?: string
+          status?: string | null
+          type: string
+          user_id: string
+        }
+        Update: {
+          contact_id?: string | null
+          created_at?: string
+          deal_id?: string | null
+          description?: string
+          due_date?: string | null
+          id?: string
+          status?: string | null
+          type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activities_contact_id_fkey"
+            columns: ["contact_id"]
+            isOneToOne: false
+            referencedRelation: "contacts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "activities_deal_id_fkey"
+            columns: ["deal_id"]
+            isOneToOne: false
+            referencedRelation: "deals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      communications: {
+        Row: {
+          contact_id: string | null
+          content: string | null
+          created_at: string
+          deal_id: string | null
+          direction: string | null
+          id: string
+          status: string | null
+          subject: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          contact_id?: string | null
+          content?: string | null
+          created_at?: string
+          deal_id?: string | null
+          direction?: string | null
+          id?: string
+          status?: string | null
+          subject: string
+          type: string
+          user_id: string
+        }
+        Update: {
+          contact_id?: string | null
+          content?: string | null
+          created_at?: string
+          deal_id?: string | null
+          direction?: string | null
+          id?: string
+          status?: string | null
+          subject?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "communications_contact_id_fkey"
+            columns: ["contact_id"]
+            isOneToOne: false
+            referencedRelation: "contacts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "communications_deal_id_fkey"
+            columns: ["deal_id"]
+            isOneToOne: false
+            referencedRelation: "deals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      contacts: {
+        Row: {
+          company: string | null
+          created_at: string
+          email: string | null
+          first_name: string
+          id: string
+          last_name: string
+          notes: string | null
+          phone: string | null
+          position: string | null
+          source: string | null
+          status: string | null
+          tags: string[] | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          company?: string | null
+          created_at?: string
+          email?: string | null
+          first_name: string
+          id?: string
+          last_name: string
+          notes?: string | null
+          phone?: string | null
+          position?: string | null
+          source?: string | null
+          status?: string | null
+          tags?: string[] | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          company?: string | null
+          created_at?: string
+          email?: string | null
+          first_name?: string
+          id?: string
+          last_name?: string
+          notes?: string | null
+          phone?: string | null
+          position?: string | null
+          source?: string | null
+          status?: string | null
+          tags?: string[] | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      deals: {
+        Row: {
+          company: string | null
+          contact_id: string | null
+          created_at: string
+          days_in_stage: number | null
+          expected_close_date: string | null
+          id: string
+          last_activity: string | null
+          name: string
+          notes: string | null
+          priority: string | null
+          probability: number | null
+          stage: string
+          updated_at: string
+          user_id: string
+          value: number
+        }
+        Insert: {
+          company?: string | null
+          contact_id?: string | null
+          created_at?: string
+          days_in_stage?: number | null
+          expected_close_date?: string | null
+          id?: string
+          last_activity?: string | null
+          name: string
+          notes?: string | null
+          priority?: string | null
+          probability?: number | null
+          stage?: string
+          updated_at?: string
+          user_id: string
+          value?: number
+        }
+        Update: {
+          company?: string | null
+          contact_id?: string | null
+          created_at?: string
+          days_in_stage?: number | null
+          expected_close_date?: string | null
+          id?: string
+          last_activity?: string | null
+          name?: string
+          notes?: string | null
+          priority?: string | null
+          probability?: number | null
+          stage?: string
+          updated_at?: string
+          user_id?: string
+          value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deals_contact_id_fkey"
+            columns: ["contact_id"]
+            isOneToOne: false
+            referencedRelation: "contacts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notifications: {
+        Row: {
+          action_url: string | null
+          created_at: string
+          id: string
+          is_read: boolean | null
+          message: string
+          title: string
+          type: string | null
+          user_id: string
+        }
+        Insert: {
+          action_url?: string | null
+          created_at?: string
+          id?: string
+          is_read?: boolean | null
+          message: string
+          title: string
+          type?: string | null
+          user_id: string
+        }
+        Update: {
+          action_url?: string | null
+          created_at?: string
+          id?: string
+          is_read?: boolean | null
+          message?: string
+          title?: string
+          type?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          company: string | null
+          created_at: string
+          first_name: string | null
+          id: string
+          last_name: string | null
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          company?: string | null
+          created_at?: string
+          first_name?: string | null
+          id: string
+          last_name?: string | null
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          company?: string | null
+          created_at?: string
+          first_name?: string | null
+          id?: string
+          last_name?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

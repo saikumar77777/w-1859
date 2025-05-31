@@ -1,82 +1,138 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import CRMSidebar from '../components/CRMSidebar';
 import MetricsCard from '../components/MetricsCard';
-import ContactTable from '../components/ContactTable';
 import ActivityFeed from '../components/ActivityFeed';
-import { User, FileText, Circle, Bell } from 'lucide-react';
+import NotificationCenter from '../components/NotificationCenter';
+import { useAuth } from '@/hooks/useAuth';
+import { useContacts } from '@/hooks/useContacts';
+import { useDeals } from '@/hooks/useDeals';
+import { useNotifications } from '@/hooks/useNotifications';
+import { Bell, Users, DollarSign, TrendingUp, Target, Calendar } from 'lucide-react';
 
 const Index = () => {
+  const [activeView, setActiveView] = useState<'dashboard' | 'notifications'>('dashboard');
+  const { user } = useAuth();
+  const { contacts } = useContacts();
+  const { deals } = useDeals();
+  const { unreadCount } = useNotifications();
+
+  // Calculate metrics from real data
+  const totalRevenue = deals
+    .filter(deal => deal.stage === 'closed-won')
+    .reduce((sum, deal) => sum + deal.value, 0);
+
+  const totalLeads = contacts.filter(contact => contact.status === 'lead').length;
+  const totalCustomers = contacts.filter(contact => contact.status === 'customer').length;
+  
+  const pipelineValue = deals
+    .filter(deal => !['closed-won', 'closed-lost'].includes(deal.stage))
+    .reduce((sum, deal) => sum + deal.value, 0);
+
+  const activeDeals = deals.filter(deal => !['closed-won', 'closed-lost'].includes(deal.stage)).length;
+
+  const metrics = [
+    {
+      title: 'Total Revenue',
+      value: `$${totalRevenue.toLocaleString()}`,
+      change: '+12.5%',
+      trend: 'up' as const,
+      icon: DollarSign,
+      color: 'emerald'
+    },
+    {
+      title: 'New Leads',
+      value: totalLeads.toString(),
+      change: '+8.2%',
+      trend: 'up' as const,
+      icon: Users,
+      color: 'blue'
+    },
+    {
+      title: 'Pipeline Value',
+      value: `$${pipelineValue.toLocaleString()}`,
+      change: '+15.3%',
+      trend: 'up' as const,
+      icon: TrendingUp,
+      color: 'purple'
+    },
+    {
+      title: 'Active Deals',
+      value: activeDeals.toString(),
+      change: '+3.1%',
+      trend: 'up' as const,
+      icon: Target,
+      color: 'orange'
+    }
+  ];
+
   return (
     <div className="min-h-screen bg-crm-primary flex">
       <CRMSidebar />
       
       <div className="flex-1 p-8">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-semibold text-crm-text-white mb-2">
-            Dashboard Overview
-          </h1>
-          <p className="text-crm-text-secondary">
-            Welcome back! Here's what's happening with your business today.
-          </p>
-        </div>
-
-        {/* Metrics Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <MetricsCard
-            title="Total Contacts"
-            value="2,847"
-            subValue="+12.5%"
-            accentColor="#3b82f6"
-            icon={<User className="w-6 h-6 text-crm-electric" />}
-            trend="up"
-            trendValue="12.5%"
-          />
-          
-          <MetricsCard
-            title="Active Deals"
-            value="127"
-            subValue="$1.2M Value"
-            gradient="linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)"
-            icon={<FileText className="w-6 h-6 text-white" />}
-            trend="up"
-            trendValue="8.3%"
-          />
-          
-          <MetricsCard
-            title="Monthly Revenue"
-            value="$284.7K"
-            subValue="Target: $300K"
-            gradient="linear-gradient(135deg, #065f46 0%, #10b981 100%)"
-            icon={<Circle className="w-6 h-6 text-white" />}
-            trend="up"
-            trendValue="15.2%"
-          />
-          
-          <MetricsCard
-            title="Conversion Rate"
-            value="24.8%"
-            subValue="Industry Avg: 18%"
-            accentColor="#10b981"
-            icon={<Bell className="w-6 h-6 text-crm-emerald" />}
-            trend="up"
-            trendValue="3.1%"
-          />
-        </div>
-
-        {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Contact Table - Takes up 2 columns */}
-          <div className="lg:col-span-2">
-            <ContactTable />
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <h1 className="text-3xl font-bold text-crm-text-white mb-2">
+              Welcome back, {user?.user_metadata?.first_name || 'User'}!
+            </h1>
+            <p className="text-crm-text-secondary">
+              Here's what's happening with your business today
+            </p>
           </div>
           
-          {/* Activity Feed - Takes up 1 column */}
-          <div className="lg:col-span-1">
-            <ActivityFeed />
+          <div className="flex space-x-4">
+            <button
+              onClick={() => setActiveView('dashboard')}
+              className={`px-4 py-2 rounded-lg transition-colors ${
+                activeView === 'dashboard'
+                  ? 'bg-crm-electric text-white'
+                  : 'text-crm-text-secondary hover:text-crm-text-white hover:bg-crm-tertiary'
+              }`}
+            >
+              Dashboard
+            </button>
+            <button
+              onClick={() => setActiveView('notifications')}
+              className={`px-4 py-2 rounded-lg transition-colors relative ${
+                activeView === 'notifications'
+                  ? 'bg-crm-electric text-white'
+                  : 'text-crm-text-secondary hover:text-crm-text-white hover:bg-crm-tertiary'
+              }`}
+            >
+              <Bell className="w-4 h-4 mr-2 inline" />
+              Notifications
+              {unreadCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  {unreadCount}
+                </span>
+              )}
+            </button>
           </div>
         </div>
+
+        {activeView === 'dashboard' ? (
+          <>
+            {/* Metrics Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
+              {metrics.map((metric, index) => (
+                <MetricsCard key={index} {...metric} />
+              ))}
+            </div>
+
+            {/* Activity Feed */}
+            <div className="crm-card p-6">
+              <div className="flex items-center space-x-3 mb-6">
+                <Calendar className="w-6 h-6 text-crm-electric" />
+                <h2 className="text-xl font-semibold text-crm-text-white">Recent Activity</h2>
+              </div>
+              <ActivityFeed />
+            </div>
+          </>
+        ) : (
+          <NotificationCenter />
+        )}
       </div>
     </div>
   );
