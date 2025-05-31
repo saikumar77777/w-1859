@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -110,6 +111,29 @@
     background-color: #0f172a;
     color: #f8fafc;
   }
+
+  /* Fix input text visibility globally */
+  input {
+    color: #ffffff !important;
+  }
+  
+  input::placeholder {
+    color: #9ca3af !important;
+  }
+  
+  /* Fix select text visibility */
+  select {
+    color: #ffffff !important;
+  }
+  
+  /* Fix textarea text visibility */
+  textarea {
+    color: #ffffff !important;
+  }
+  
+  textarea::placeholder {
+    color: #9ca3af !important;
+  }
 }
 
 @layer components {
@@ -142,8 +166,14 @@
     @apply bg-crm-tertiary border border-crm-tertiary/50 shadow-premium-lg;
   }
   
+  /* Enhanced form controls with better text visibility */
   .form-control-dark {
-    @apply bg-crm-secondary border-crm-tertiary text-crm-text-white placeholder:text-crm-text-secondary focus:border-crm-electric focus:ring-1 focus:ring-crm-electric/50 transition-all duration-200;
+    @apply bg-crm-tertiary border-crm-tertiary text-white placeholder:text-gray-400 focus:border-crm-electric focus:ring-1 focus:ring-crm-electric/50 transition-all duration-200;
+    color: #ffffff !important;
+  }
+  
+  .form-control-dark::placeholder {
+    color: #9ca3af !important;
   }
   
   .btn-primary {
@@ -391,22 +421,6 @@ html {
   background: rgba(99, 102, 241, 0.8);
 }
 
-/* Loading animation for skeleton states */
-.skeleton-dark {
-  background: linear-gradient(90deg, #374151 25%, #4b5563 50%, #374151 75%);
-  background-size: 200% 100%;
-  animation: loading 1.5s infinite;
-}
-
-@keyframes loading {
-  0% {
-    background-position: 200% 0;
-  }
-  100% {
-    background-position: -200% 0;
-  }
-}
-
 /* Enhanced button animations */
 .btn-animate {
   transition: all 0.2s ease;
@@ -423,14 +437,25 @@ html {
   transform: translateY(0);
 }
 
-/* Form control enhancements */
-.form-control-dark {
-  transition: all 0.2s ease;
+/* Form control enhancements - CRITICAL for text visibility */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="search"],
+textarea,
+select {
+  color: #ffffff !important;
+  background-color: #334155 !important;
 }
 
-.form-control-dark:focus {
-  transform: scale(1.01);
-  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+input[type="text"]::placeholder,
+input[type="email"]::placeholder,
+input[type="password"]::placeholder,
+input[type="number"]::placeholder,
+input[type="search"]::placeholder,
+textarea::placeholder {
+  color: #9ca3af !important;
 }
 
 /* Status badge animations */

@@ -104,23 +104,23 @@ const DealKanbanBoard = () => {
 
   return (
     <>
-      <ScrollArea className="flex-1 w-full">
-        <div className="flex space-x-6 min-w-max pb-8 px-4">
+      <div className="h-full overflow-x-auto">
+        <div className="flex space-x-6 h-full min-w-max p-4">
           {pipelineStages.map((stage) => {
             const stageDeals = getDealsForStage(stage.id);
             const totalValue = getTotalValueForStage(stage.id);
 
             return (
-              <div key={stage.id} className="flex-shrink-0 w-80 animate-fadeIn">
+              <div key={stage.id} className="flex-shrink-0 w-80 h-full flex flex-col">
                 {/* Stage Header */}
                 <div 
-                  className={`crm-card p-4 mb-4 border-l-4 transition-all duration-300 hover:shadow-lg`}
+                  className="bg-crm-secondary p-4 mb-4 border-l-4 rounded-lg border border-crm-tertiary"
                   style={{ borderLeftColor: stage.color }}
                 >
                   <div className="flex items-center justify-between mb-2">
-                    <h3 className="font-semibold text-crm-text-white">{stage.name}</h3>
+                    <h3 className="font-semibold text-white">{stage.name}</h3>
                     <span 
-                      className="px-2 py-1 rounded-full text-xs font-medium transition-all duration-200 hover:scale-105"
+                      className="px-2 py-1 rounded-full text-xs font-medium"
                       style={{ 
                         backgroundColor: `${stage.color}20`,
                         color: stage.color 
@@ -130,12 +130,12 @@ const DealKanbanBoard = () => {
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <p className="font-mono text-sm font-bold text-crm-text-white">
+                    <p className="font-mono text-sm font-bold text-white">
                       {formatCurrency(totalValue)}
                     </p>
                     <button 
                       onClick={() => handleAddDeal(stage.id)}
-                      className="text-crm-text-secondary hover:text-crm-text-white transition-all duration-200 hover:scale-110"
+                      className="text-gray-400 hover:text-white transition-colors"
                       title="Add Deal"
                     >
                       <Plus className="w-4 h-4" />
@@ -143,12 +143,13 @@ const DealKanbanBoard = () => {
                   </div>
                 </div>
 
-                {/* Deal Cards */}
-                <ScrollArea className="h-[calc(100vh-300px)]">
-                  <div className="space-y-4 pr-2">
-                    {stageDeals.map((deal) => (
-                      <div key={deal.id} className="animate-slideIn">
+                {/* Deal Cards Container */}
+                <div className="flex-1 overflow-hidden">
+                  <ScrollArea className="h-full">
+                    <div className="space-y-4 pr-2">
+                      {stageDeals.map((deal) => (
                         <DealCard 
+                          key={deal.id}
                           deal={{
                             id: deal.id,
                             name: deal.name,
@@ -163,24 +164,24 @@ const DealKanbanBoard = () => {
                           stageColor={stage.color}
                           onUpdate={updateDeal}
                         />
-                      </div>
-                    ))}
+                      ))}
 
-                    {/* Add Deal Button */}
-                    <button 
-                      onClick={() => handleAddDeal(stage.id)}
-                      className="w-full mt-4 p-4 border-2 border-dashed border-crm-tertiary rounded-lg text-crm-text-secondary hover:text-crm-text-white hover:border-crm-text-secondary transition-all duration-300 flex items-center justify-center hover:bg-crm-tertiary/20"
-                    >
-                      <Plus className="w-5 h-5 mr-2" />
-                      Add Deal
-                    </button>
-                  </div>
-                </ScrollArea>
+                      {/* Add Deal Button */}
+                      <button 
+                        onClick={() => handleAddDeal(stage.id)}
+                        className="w-full mt-4 p-4 border-2 border-dashed border-crm-tertiary rounded-lg text-gray-400 hover:text-white hover:border-gray-400 transition-colors flex items-center justify-center hover:bg-crm-tertiary/20"
+                      >
+                        <Plus className="w-5 h-5 mr-2" />
+                        Add Deal
+                      </button>
+                    </div>
+                  </ScrollArea>
+                </div>
               </div>
             );
           })}
         </div>
-      </ScrollArea>
+      </div>
 
       <CreateDealDialog
         isOpen={isCreateDialogOpen}
