@@ -83,7 +83,10 @@ const DealCard: React.FC<DealCardProps> = ({ deal, stageColor, onUpdate }) => {
     }).format(amount);
   };
 
-  const handleCardClick = () => {
+  const handleCardClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log('Navigating to deal:', deal.id);
     navigate(`/deals/${deal.id}`);
   };
 

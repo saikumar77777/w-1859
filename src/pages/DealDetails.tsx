@@ -13,15 +13,20 @@ import { useToast } from '@/hooks/use-toast';
 const DealDetails = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { deals, updateDeal } = useDeals();
+  const { deals, updateDeal, loading } = useDeals();
   const { toast } = useToast();
   const [newNote, setNewNote] = useState('');
   const [isAddingNote, setIsAddingNote] = useState(false);
 
+  console.log('DealDetails: Current deal ID from URL:', id);
+  console.log('DealDetails: Available deals:', deals);
+
   const deal = deals.find(d => d.id === id);
+  console.log('DealDetails: Found deal:', deal);
 
   useEffect(() => {
-    if (!deal) {
+    if (!loading && deals.length > 0 && !deal && id) {
+      console.log('Deal not found, redirecting to deals page');
       toast({
         title: "Deal not found",
         description: "The requested deal could not be found.",
@@ -29,12 +34,32 @@ const DealDetails = () => {
       });
       navigate('/deals');
     }
-  }, [deal, navigate, toast]);
+  }, [deal, loading, deals, id, navigate, toast]);
 
-  if (!deal) {
+  if (loading) {
     return (
       <div className="min-h-screen bg-crm-primary flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-crm-electric"></div>
+      </div>
+    );
+  }
+
+  if (!deal) {
+    return (
+      <div className="min-h-screen bg-crm-primary flex">
+        <CRMSidebar />
+        <div className="flex-1 flex items-center justify-center">
+          <div className="text-center">
+            <h2 className="text-2xl font-bold text-white mb-4">Deal Not Found</h2>
+            <p className="text-crm-text-secondary mb-6">The requested deal could not be found.</p>
+            <Button 
+              onClick={() => navigate('/deals')}
+              className="bg-crm-electric hover:bg-blue-600 text-white"
+            >
+              Back to Deals
+            </Button>
+          </div>
+        </div>
       </div>
     );
   }
