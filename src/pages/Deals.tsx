@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import CRMSidebar from '../components/CRMSidebar';
 import DealKanbanBoard from '../components/DealKanbanBoard';
 import { useDeals } from '@/hooks/useDeals';
@@ -25,13 +25,16 @@ const Deals = () => {
     probability: 50
   });
 
-  // This will be used to filter deals in the future if needed
-  const filteredDeals = deals.filter(deal => {
-    const matchesSearch = deal.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         deal.company?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStage = filterStage === 'all' || deal.stage === filterStage;
-    return matchesSearch && matchesStage;
-  });
+  // Filter deals based on search and stage filter
+  const filteredDeals = useMemo(() => {
+    return deals.filter(deal => {
+      const matchesSearch = searchTerm === '' || 
+        deal.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (deal.company && deal.company.toLowerCase().includes(searchTerm.toLowerCase()));
+      const matchesStage = filterStage === 'all' || deal.stage === filterStage;
+      return matchesSearch && matchesStage;
+    });
+  }, [deals, searchTerm, filterStage]);
 
   const handleCreateDeal = async () => {
     if (!newDeal.name) return;
@@ -173,7 +176,7 @@ const Deals = () => {
                 <Filter className="w-4 h-4 mr-2" />
                 <SelectValue placeholder="Filter by stage" />
               </SelectTrigger>
-              <SelectContent className="bg-crm-tertiary border-crm-tertiary">
+              <SelectContent className="bg-crm-tertiary border-crm-tertiary z-50">
                 <SelectItem value="all" className="text-white hover:bg-crm-secondary">All Stages</SelectItem>
                 <SelectItem value="prospecting" className="text-white hover:bg-crm-secondary">Prospecting</SelectItem>
                 <SelectItem value="qualification" className="text-white hover:bg-crm-secondary">Qualification</SelectItem>
@@ -185,9 +188,9 @@ const Deals = () => {
             </Select>
           </div>
 
-          {/* Kanban Board - Full height container */}
+          {/* Kanban Board - Pass filtered deals */}
           <div className="flex-1 overflow-hidden">
-            <DealKanbanBoard />
+            <DealKanbanBoard searchTerm={searchTerm} filterStage={filterStage} />
           </div>
         </div>
       </div>

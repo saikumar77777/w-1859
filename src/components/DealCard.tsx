@@ -18,6 +18,7 @@ interface Deal {
     count: number;
   }[];
   isOverdue?: boolean;
+  probability?: number;
 }
 
 interface DealCardProps {
@@ -102,6 +103,7 @@ const DealCard: React.FC<DealCardProps> = ({ deal, stageColor, onUpdate }) => {
 
   const priorityConfig = getPriorityConfig(deal.priority);
   const isOverdue = deal.daysInStage > 10 || deal.activities.some(a => a.type === 'overdue');
+  const probability = deal.probability || 0;
 
   return (
     <div 
@@ -193,14 +195,18 @@ const DealCard: React.FC<DealCardProps> = ({ deal, stageColor, onUpdate }) => {
         <span className="transition-colors duration-200 hover:text-crm-text-white">{deal.lastActivity}</span>
       </div>
 
-      {/* Progress Indicator */}
+      {/* Probability Progress Indicator */}
       <div className="pt-3 border-t border-crm-tertiary">
-        <div className="w-full bg-crm-tertiary rounded-full h-1 overflow-hidden">
+        <div className="flex items-center justify-between text-xs text-crm-text-secondary mb-2">
+          <span>Win Probability</span>
+          <span className="font-medium text-crm-text-white">{probability}%</span>
+        </div>
+        <div className="w-full bg-crm-tertiary rounded-full h-2 overflow-hidden">
           <div 
-            className="h-1 rounded-full transition-all duration-500 ease-out"
+            className="h-2 rounded-full transition-all duration-500 ease-out"
             style={{ 
               backgroundColor: stageColor,
-              width: `${Math.min(100, (deal.activities.length * 20) + 20)}%`
+              width: `${probability}%`
             }}
           />
         </div>

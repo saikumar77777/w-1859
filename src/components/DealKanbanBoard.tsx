@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Plus } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -15,7 +16,12 @@ interface PipelineStage {
   borderColor: string;
 }
 
-const DealKanbanBoard = () => {
+interface DealKanbanBoardProps {
+  searchTerm?: string;
+  filterStage?: string;
+}
+
+const DealKanbanBoard: React.FC<DealKanbanBoardProps> = ({ searchTerm = '', filterStage = 'all' }) => {
   const { deals, loading, createDeal, updateDeal } = useDeals();
   const { toast } = useToast();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
@@ -79,8 +85,17 @@ const DealKanbanBoard = () => {
     }
   ];
 
+  // Filter deals based on search and stage
+  const filteredDeals = deals.filter(deal => {
+    const matchesSearch = searchTerm === '' || 
+      deal.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (deal.company && deal.company.toLowerCase().includes(searchTerm.toLowerCase()));
+    const matchesStage = filterStage === 'all' || deal.stage === filterStage;
+    return matchesSearch && matchesStage;
+  });
+
   const getDealsForStage = (stageId: string) => {
-    return deals.filter(deal => deal.stage === stageId);
+    return filteredDeals.filter(deal => deal.stage === stageId);
   };
 
   const getTotalValueForStage = (stageId: string) => {
@@ -152,10 +167,9 @@ const DealKanbanBoard = () => {
       const updateData: any = { 
         stage: targetStage,
         notes: updatedNotes,
-        days_in_stage: 0  // Reset days in stage when moved
+        days_in_stage: 0
       };
 
-      // Add probability if provided
       if (probability !== undefined) {
         updateData.probability = probability;
       }
@@ -251,13 +265,20 @@ const DealKanbanBoard = () => {
                               daysInStage: deal.days_in_stage || 0,
                               lastActivity: deal.last_activity || 'No recent activity',
                               activities: [],
-                              isOverdue: (deal.days_in_stage || 0) > 14
+                              isOverdue: (deal.days_in_stage || 0) > 14,
+                              probability: deal.probability || 0
                             }} 
                             stageColor={stage.color}
                             onUpdate={updateDeal}
                           />
                         </div>
                       ))}
+
+                      {stageDeals.length === 0 && (searchTerm || filterStage !== 'all') && (
+                        <div className="text-center text-crm-text-secondary py-8">
+                          No deals match your search criteria
+                        </div>
+                      )}
 
                       {/* Add Deal Button */}
                       <button 
