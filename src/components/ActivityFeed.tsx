@@ -1,117 +1,83 @@
 
 import React from 'react';
-import { Circle, User, Bell, FileText } from 'lucide-react';
-
-interface Activity {
-  id: string;
-  type: 'call' | 'email' | 'meeting' | 'note';
-  description: string;
-  contact: string;
-  timestamp: string;
-  priority: 'low' | 'medium' | 'high';
-}
+import { Clock, User, DollarSign, FileText } from 'lucide-react';
+import { useDeals } from '@/hooks/useDeals';
+import { useContacts } from '@/hooks/useContacts';
 
 const ActivityFeed = () => {
-  const activities: Activity[] = [
-    {
-      id: '1',
-      type: 'call',
-      description: 'Scheduled follow-up call with Sarah Johnson',
-      contact: 'Sarah Johnson',
-      timestamp: '2 hours ago',
-      priority: 'high'
-    },
-    {
-      id: '2',
-      type: 'email',
-      description: 'Sent proposal to Michael Chen',
-      contact: 'Michael Chen',
-      timestamp: '4 hours ago',
-      priority: 'medium'
-    },
-    {
-      id: '3',
-      type: 'meeting',
-      description: 'Demo completed with Emily Rodriguez',
-      contact: 'Emily Rodriguez',
-      timestamp: '6 hours ago',
-      priority: 'high'
-    },
-    {
-      id: '4',
-      type: 'note',
-      description: 'Added notes from discovery call',
-      contact: 'David Park',
-      timestamp: '1 day ago',
-      priority: 'low'
-    }
-  ];
+  const { deals } = useDeals();
+  const { contacts } = useContacts();
 
-  const getActivityIcon = (type: Activity['type']) => {
-    const icons = {
-      call: Bell,
-      email: FileText,
-      meeting: User,
-      note: Circle
-    };
-    return icons[type];
+  // Generate real activities from deals and contacts
+  const getRecentActivities = () => {
+    const activities = [];
+
+    // Add deal activities
+    deals.slice(0, 5).forEach(deal => {
+      activities.push({
+        id: `deal-${deal.id}`,
+        type: 'deal',
+        title: `Deal "${deal.name}" created`,
+        description: `New deal worth ${new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(deal.value)} in ${deal.stage} stage`,
+        time: new Date(deal.created_at).toLocaleDateString(),
+        icon: DollarSign,
+        color: 'text-emerald-400'
+      });
+    });
+
+    // Add contact activities
+    contacts.slice(0, 3).forEach(contact => {
+      activities.push({
+        id: `contact-${contact.id}`,
+        type: 'contact',
+        title: `New contact added`,
+        description: `${contact.first_name} ${contact.last_name} from ${contact.company || 'Unknown Company'}`,
+        time: new Date(contact.created_at).toLocaleDateString(),
+        icon: User,
+        color: 'text-blue-400'
+      });
+    });
+
+    // Sort by creation date and return top 8
+    return activities
+      .sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime())
+      .slice(0, 8);
   };
 
-  const getPriorityColor = (priority: Activity['priority']) => {
-    const colors = {
-      high: 'border-red-500 bg-red-500/10',
-      medium: 'border-crm-status-opportunity bg-crm-status-opportunity/10',
-      low: 'border-crm-text-secondary bg-crm-text-secondary/10'
-    };
-    return colors[priority];
-  };
+  const activities = getRecentActivities();
+
+  if (activities.length === 0) {
+    return (
+      <div className="text-center py-8">
+        <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+        <p className="text-gray-400">No recent activity</p>
+        <p className="text-sm text-gray-500 mt-2">
+          Create some deals or contacts to see activity here
+        </p>
+      </div>
+    );
+  }
 
   return (
-    <div className="crm-card p-6">
-      <h2 className="text-xl font-semibold text-crm-text-white mb-6">Recent Activity</h2>
-      
-      <div className="space-y-4">
-        {activities.map((activity) => {
-          const Icon = getActivityIcon(activity.type);
-          const priorityColor = getPriorityColor(activity.priority);
-          
-          return (
-            <div 
-              key={activity.id}
-              className="flex items-start space-x-4 p-4 rounded-lg bg-crm-tertiary/30 hover:bg-crm-tertiary/50 transition-all duration-200 animate-fade-in-up"
-            >
-              <div className={`p-2 rounded-full ${priorityColor} border`}>
-                <Icon className="w-4 h-4" />
-              </div>
-              
-              <div className="flex-1 min-w-0">
-                <p className="text-crm-text-white font-medium mb-1">
-                  {activity.description}
-                </p>
-                <div className="flex items-center space-x-2 text-sm text-crm-text-secondary">
-                  <span>Contact: {activity.contact}</span>
-                  <span>•</span>
-                  <span>{activity.timestamp}</span>
-                </div>
-              </div>
-              
-              <div className={`px-2 py-1 rounded-full text-xs font-medium ${
-                activity.priority === 'high' ? 'bg-red-500/20 text-red-400' :
-                activity.priority === 'medium' ? 'bg-crm-status-opportunity/20 text-crm-status-opportunity' :
-                'bg-crm-text-secondary/20 text-crm-text-secondary'
-              }`}>
-                {activity.priority}
+    <div className="space-y-4">
+      {activities.map((activity) => {
+        const Icon = activity.icon;
+        return (
+          <div key={activity.id} className="flex items-start space-x-3 p-3 rounded-lg hover:bg-crm-tertiary/30 transition-colors">
+            <div className={`p-2 rounded-full bg-crm-tertiary ${activity.color}`}>
+              <Icon className="w-4 h-4" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-white font-medium">{activity.title}</p>
+              <p className="text-crm-text-secondary text-sm mt-1">{activity.description}</p>
+              <div className="flex items-center mt-2 text-xs text-crm-text-secondary">
+                <Clock className="w-3 h-3 mr-1" />
+                {activity.time}
               </div>
             </div>
-          );
-        })}
-      </div>
-      
-      <div className="mt-6 text-center">
-        <button className="text-crm-electric hover:text-blue-400 font-medium transition-colors duration-200">
-          View All Activity →
-        </button>
-      </div>
+          </div>
+        );
+      })}
     </div>
   );
 };

@@ -3,8 +3,10 @@ import React, { useState } from 'react';
 import { Plus } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useDeals } from '@/hooks/useDeals';
+import { useToast } from '@/hooks/use-toast';
 import DealCard from './DealCard';
 import CreateDealDialog from './CreateDealDialog';
+import StageChangeDialog from './StageChangeDialog';
 
 interface PipelineStage {
   id: string;
@@ -16,8 +18,22 @@ interface PipelineStage {
 
 const DealKanbanBoard = () => {
   const { deals, loading, createDeal, updateDeal } = useDeals();
+  const { toast } = useToast();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [selectedStage, setSelectedStage] = useState<string>('');
+  const [stageChangeDialog, setStageChangeDialog] = useState<{
+    isOpen: boolean;
+    dealId: string;
+    dealName: string;
+    fromStage: string;
+    toStage: string;
+  }>({
+    isOpen: false,
+    dealId: '',
+    dealName: '',
+    fromStage: '',
+    toStage: ''
+  });
 
   const pipelineStages: PipelineStage[] = [
     {
@@ -94,6 +110,67 @@ const DealKanbanBoard = () => {
     setIsCreateDialogOpen(false);
   };
 
+  const handleDragStart = (e: React.DragEvent, dealId: string) => {
+    e.dataTransfer.setData('text/plain', dealId);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+  };
+
+  const handleDrop = async (e: React.DragEvent, targetStage: string) => {
+    e.preventDefault();
+    const dealId = e.dataTransfer.getData('text/plain');
+    const deal = deals.find(d => d.id === dealId);
+    
+    if (deal && deal.stage !== targetStage) {
+      const stageName = pipelineStages.find(s => s.id === targetStage)?.name || targetStage;
+      const fromStageName = pipelineStages.find(s => s.id === deal.stage)?.name || deal.stage;
+      
+      setStageChangeDialog({
+        isOpen: true,
+        dealId: deal.id,
+        dealName: deal.name,
+        fromStage: fromStageName,
+        toStage: stageName
+      });
+    }
+  };
+
+  const handleConfirmStageChange = async (note: string) => {
+    const { dealId } = stageChangeDialog;
+    const deal = deals.find(d => d.id === dealId);
+    const targetStage = pipelineStages.find(s => s.name === stageChangeDialog.toStage)?.id;
+    
+    if (deal && targetStage) {
+      const currentNotes = deal.notes || '';
+      const timestamp = new Date().toLocaleString();
+      const stageChangeNote = `[${timestamp}] Moved from ${stageChangeDialog.fromStage} to ${stageChangeDialog.toStage}${note ? `: ${note}` : ''}`;
+      const updatedNotes = currentNotes 
+        ? `${currentNotes}\n\n${stageChangeNote}`
+        : stageChangeNote;
+
+      await updateDeal(dealId, { 
+        stage: targetStage,
+        notes: updatedNotes,
+        days_in_stage: 0  // Reset days in stage when moved
+      });
+
+      toast({
+        title: "Deal moved",
+        description: `${deal.name} moved to ${stageChangeDialog.toStage}`
+      });
+    }
+    
+    setStageChangeDialog({
+      isOpen: false,
+      dealId: '',
+      dealName: '',
+      fromStage: '',
+      toStage: ''
+    });
+  };
+
   if (loading) {
     return (
       <div className="flex-1 flex items-center justify-center">
@@ -111,7 +188,12 @@ const DealKanbanBoard = () => {
             const totalValue = getTotalValueForStage(stage.id);
 
             return (
-              <div key={stage.id} className="flex-shrink-0 w-80 h-full flex flex-col">
+              <div 
+                key={stage.id} 
+                className="flex-shrink-0 w-80 h-full flex flex-col"
+                onDragOver={handleDragOver}
+                onDrop={(e) => handleDrop(e, stage.id)}
+              >
                 {/* Stage Header */}
                 <div 
                   className="bg-crm-secondary p-4 mb-4 border-l-4 rounded-lg border border-crm-tertiary"
@@ -148,22 +230,27 @@ const DealKanbanBoard = () => {
                   <ScrollArea className="h-full">
                     <div className="space-y-4 pr-2">
                       {stageDeals.map((deal) => (
-                        <DealCard 
+                        <div
                           key={deal.id}
-                          deal={{
-                            id: deal.id,
-                            name: deal.name,
-                            company: deal.company || 'Unknown Company',
-                            value: deal.value,
-                            priority: (deal.priority as 'critical' | 'high' | 'medium' | 'low') || 'medium',
-                            daysInStage: deal.days_in_stage || 0,
-                            lastActivity: deal.last_activity || 'No recent activity',
-                            activities: [],
-                            isOverdue: (deal.days_in_stage || 0) > 14
-                          }} 
-                          stageColor={stage.color}
-                          onUpdate={updateDeal}
-                        />
+                          draggable
+                          onDragStart={(e) => handleDragStart(e, deal.id)}
+                        >
+                          <DealCard 
+                            deal={{
+                              id: deal.id,
+                              name: deal.name,
+                              company: deal.company || 'Unknown Company',
+                              value: deal.value,
+                              priority: (deal.priority as 'critical' | 'high' | 'medium' | 'low') || 'medium',
+                              daysInStage: deal.days_in_stage || 0,
+                              lastActivity: deal.last_activity || 'No recent activity',
+                              activities: [],
+                              isOverdue: (deal.days_in_stage || 0) > 14
+                            }} 
+                            stageColor={stage.color}
+                            onUpdate={updateDeal}
+                          />
+                        </div>
                       ))}
 
                       {/* Add Deal Button */}
@@ -188,6 +275,21 @@ const DealKanbanBoard = () => {
         onClose={() => setIsCreateDialogOpen(false)}
         onSubmit={handleCreateDeal}
         stage={selectedStage}
+      />
+
+      <StageChangeDialog
+        isOpen={stageChangeDialog.isOpen}
+        dealName={stageChangeDialog.dealName}
+        fromStage={stageChangeDialog.fromStage}
+        toStage={stageChangeDialog.toStage}
+        onConfirm={handleConfirmStageChange}
+        onCancel={() => setStageChangeDialog({
+          isOpen: false,
+          dealId: '',
+          dealName: '',
+          fromStage: '',
+          toStage: ''
+        })}
       />
     </>
   );

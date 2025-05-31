@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Clock, Mail, Phone, Calendar, AlertTriangle, User, MoreHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -26,6 +27,8 @@ interface DealCardProps {
 }
 
 const DealCard: React.FC<DealCardProps> = ({ deal, stageColor, onUpdate }) => {
+  const navigate = useNavigate();
+
   const getPriorityConfig = (priority: Deal['priority']) => {
     const configs = {
       critical: {
@@ -80,13 +83,17 @@ const DealCard: React.FC<DealCardProps> = ({ deal, stageColor, onUpdate }) => {
     }).format(amount);
   };
 
-  const handleEditDeal = () => {
-    // This would open an edit dialog
+  const handleCardClick = () => {
+    navigate(`/deals/${deal.id}`);
+  };
+
+  const handleEditDeal = (e: React.MouseEvent) => {
+    e.stopPropagation();
     console.log('Edit deal:', deal.id);
   };
 
-  const handleDeleteDeal = () => {
-    // This would show a confirmation dialog
+  const handleDeleteDeal = (e: React.MouseEvent) => {
+    e.stopPropagation();
     console.log('Delete deal:', deal.id);
   };
 
@@ -95,6 +102,7 @@ const DealCard: React.FC<DealCardProps> = ({ deal, stageColor, onUpdate }) => {
 
   return (
     <div 
+      onClick={handleCardClick}
       className={`crm-card crm-card-hover p-4 border-l-4 cursor-pointer transform transition-all duration-300 hover:scale-[1.02] hover:shadow-xl ${
         priorityConfig.glowClass
       } ${isOverdue ? 'border-red-500 bg-gradient-to-r from-crm-secondary to-red-900/20' : ''}`}
@@ -119,6 +127,7 @@ const DealCard: React.FC<DealCardProps> = ({ deal, stageColor, onUpdate }) => {
                 variant="ghost" 
                 size="sm" 
                 className="h-6 w-6 p-0 text-crm-text-secondary hover:text-crm-text-white transition-colors duration-200"
+                onClick={(e) => e.stopPropagation()}
               >
                 <MoreHorizontal className="w-3 h-3" />
               </Button>

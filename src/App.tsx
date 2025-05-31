@@ -10,6 +10,7 @@ import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Contacts from "./pages/Contacts";
 import Deals from "./pages/Deals";
+import DealDetails from "./pages/DealDetails";
 import DealsAnalytics from "./pages/DealsAnalytics";
 import Communications from "./pages/Communications";
 import Notifications from "./pages/Notifications";
@@ -47,6 +48,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <Deals />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/deals/:id"
+              element={
+                <ProtectedRoute>
+                  <DealDetails />
                 </ProtectedRoute>
               }
             />
