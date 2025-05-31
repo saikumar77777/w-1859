@@ -177,7 +177,7 @@ const Deals = () => {
 
           {/* Analytics */}
           <div className="mb-8">
-            <DealsAnalytics deals={filteredDeals} />
+            <DealsAnalytics />
           </div>
 
           {/* Kanban Board */}
