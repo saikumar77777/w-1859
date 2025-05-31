@@ -37,7 +37,7 @@ const Index = () => {
       value: `$${totalRevenue.toLocaleString()}`,
       change: '+12.5%',
       trend: 'up' as const,
-      icon: DollarSign,
+      icon: <DollarSign className="w-6 h-6" />,
       color: 'emerald'
     },
     {
@@ -45,7 +45,7 @@ const Index = () => {
       value: totalLeads.toString(),
       change: '+8.2%',
       trend: 'up' as const,
-      icon: Users,
+      icon: <Users className="w-6 h-6" />,
       color: 'blue'
     },
     {
@@ -53,7 +53,7 @@ const Index = () => {
       value: `$${pipelineValue.toLocaleString()}`,
       change: '+15.3%',
       trend: 'up' as const,
-      icon: TrendingUp,
+      icon: <TrendingUp className="w-6 h-6" />,
       color: 'purple'
     },
     {
@@ -61,7 +61,7 @@ const Index = () => {
       value: activeDeals.toString(),
       change: '+3.1%',
       trend: 'up' as const,
-      icon: Target,
+      icon: <Target className="w-6 h-6" />,
       color: 'orange'
     }
   ];

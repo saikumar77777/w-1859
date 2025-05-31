@@ -50,7 +50,7 @@ export const useDeals = () => {
     }
   };
 
-  const createDeal = async (dealData: Partial<Deal>) => {
+  const createDeal = async (dealData: Partial<Deal> & { name: string; value: number }) => {
     if (!user) return;
 
     try {

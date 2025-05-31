@@ -31,7 +31,14 @@ export const useNotifications = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setNotifications(data || []);
+      
+      // Transform data to match interface types
+      const transformedData = (data || []).map(item => ({
+        ...item,
+        type: (['info', 'success', 'warning', 'error'].includes(item.type) ? item.type : 'info') as 'info' | 'success' | 'warning' | 'error'
+      }));
+      
+      setNotifications(transformedData);
     } catch (error: any) {
       console.error('Error fetching notifications:', error);
       toast({

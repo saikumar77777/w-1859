@@ -181,7 +181,7 @@ const Deals = () => {
           </div>
 
           {/* Kanban Board */}
-          <DealKanbanBoard deals={filteredDeals} />
+          <DealKanbanBoard />
         </div>
       </div>
     </div>

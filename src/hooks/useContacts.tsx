@@ -49,7 +49,7 @@ export const useContacts = () => {
     }
   };
 
-  const createContact = async (contactData: Partial<Contact>) => {
+  const createContact = async (contactData: Partial<Contact> & { first_name: string; last_name: string }) => {
     if (!user) return;
 
     try {
