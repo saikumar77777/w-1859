@@ -1,6 +1,8 @@
 
 import React from 'react';
-import { Clock, Mail, Phone, Calendar, AlertTriangle, User } from 'lucide-react';
+import { Clock, Mail, Phone, Calendar, AlertTriangle, User, MoreHorizontal } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
 interface Deal {
   id: string;
@@ -20,9 +22,10 @@ interface Deal {
 interface DealCardProps {
   deal: Deal;
   stageColor: string;
+  onUpdate?: (id: string, updates: any) => void;
 }
 
-const DealCard: React.FC<DealCardProps> = ({ deal, stageColor }) => {
+const DealCard: React.FC<DealCardProps> = ({ deal, stageColor, onUpdate }) => {
   const getPriorityConfig = (priority: Deal['priority']) => {
     const configs = {
       critical: {
@@ -77,33 +80,70 @@ const DealCard: React.FC<DealCardProps> = ({ deal, stageColor }) => {
     }).format(amount);
   };
 
+  const handleEditDeal = () => {
+    // This would open an edit dialog
+    console.log('Edit deal:', deal.id);
+  };
+
+  const handleDeleteDeal = () => {
+    // This would show a confirmation dialog
+    console.log('Delete deal:', deal.id);
+  };
+
   const priorityConfig = getPriorityConfig(deal.priority);
   const isOverdue = deal.daysInStage > 10 || deal.activities.some(a => a.type === 'overdue');
 
   return (
     <div 
-      className={`crm-card crm-card-hover p-4 border-l-4 cursor-pointer ${
+      className={`crm-card crm-card-hover p-4 border-l-4 cursor-pointer transform transition-all duration-300 hover:scale-[1.02] hover:shadow-xl ${
         priorityConfig.glowClass
       } ${isOverdue ? 'border-red-500 bg-gradient-to-r from-crm-secondary to-red-900/20' : ''}`}
       style={{ borderLeftColor: stageColor }}
     >
-      {/* Priority Badge */}
+      {/* Header with Priority and Actions */}
       <div className="flex items-center justify-between mb-3">
         <span 
-          className={`px-2 py-1 rounded-full text-xs font-medium uppercase tracking-wide ${priorityConfig.bgColor} ${priorityConfig.textColor}`}
+          className={`px-2 py-1 rounded-full text-xs font-medium uppercase tracking-wide transition-all duration-200 hover:scale-105 ${priorityConfig.bgColor} ${priorityConfig.textColor}`}
         >
           {priorityConfig.label}
         </span>
-        {isOverdue && (
-          <span className="px-2 py-1 rounded-full text-xs font-medium bg-red-500/20 text-red-400 animate-pulse">
-            Overdue
-          </span>
-        )}
+        <div className="flex items-center space-x-2">
+          {isOverdue && (
+            <span className="px-2 py-1 rounded-full text-xs font-medium bg-red-500/20 text-red-400 animate-pulse">
+              Overdue
+            </span>
+          )}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="h-6 w-6 p-0 text-crm-text-secondary hover:text-crm-text-white transition-colors duration-200"
+              >
+                <MoreHorizontal className="w-3 h-3" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="bg-crm-tertiary border-crm-tertiary">
+              <DropdownMenuItem 
+                onClick={handleEditDeal}
+                className="text-crm-text-white hover:bg-crm-secondary"
+              >
+                Edit Deal
+              </DropdownMenuItem>
+              <DropdownMenuItem 
+                onClick={handleDeleteDeal}
+                className="text-red-400 hover:bg-crm-secondary"
+              >
+                Delete Deal
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
 
       {/* Deal Info */}
       <div className="mb-4">
-        <h4 className="font-medium text-crm-text-white mb-1 line-clamp-2">
+        <h4 className="font-medium text-crm-text-white mb-1 line-clamp-2 transition-colors duration-200 hover:text-crm-electric">
           {deal.name}
         </h4>
         <p className="text-sm text-crm-text-secondary">{deal.company}</p>
@@ -111,42 +151,44 @@ const DealCard: React.FC<DealCardProps> = ({ deal, stageColor }) => {
 
       {/* Value */}
       <div className="mb-4">
-        <p className="font-mono text-lg font-bold text-crm-text-white">
+        <p className="font-mono text-lg font-bold text-crm-text-white transition-all duration-200 hover:text-crm-emerald">
           {formatCurrency(deal.value)}
         </p>
       </div>
 
       {/* Activities */}
-      <div className="mb-4">
-        <div className="flex items-center space-x-3">
-          {deal.activities.map((activity, index) => (
-            <div key={index} className="flex items-center space-x-1">
-              {getActivityIcon(activity.type)}
-              <span className="text-xs text-crm-text-secondary">
-                {activity.count}
-              </span>
-            </div>
-          ))}
+      {deal.activities.length > 0 && (
+        <div className="mb-4">
+          <div className="flex items-center space-x-3">
+            {deal.activities.map((activity, index) => (
+              <div key={index} className="flex items-center space-x-1 transition-transform duration-200 hover:scale-110">
+                {getActivityIcon(activity.type)}
+                <span className="text-xs text-crm-text-secondary">
+                  {activity.count}
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Time in Stage & Last Activity */}
-      <div className="flex items-center justify-between text-xs text-crm-text-secondary">
+      <div className="flex items-center justify-between text-xs text-crm-text-secondary mb-3">
         <div className="flex items-center">
           <Clock className="w-3 h-3 mr-1" />
           <span>{deal.daysInStage}d in stage</span>
         </div>
-        <span>{deal.lastActivity}</span>
+        <span className="transition-colors duration-200 hover:text-crm-text-white">{deal.lastActivity}</span>
       </div>
 
       {/* Progress Indicator */}
-      <div className="mt-3 pt-3 border-t border-crm-tertiary">
-        <div className="w-full bg-crm-tertiary rounded-full h-1">
+      <div className="pt-3 border-t border-crm-tertiary">
+        <div className="w-full bg-crm-tertiary rounded-full h-1 overflow-hidden">
           <div 
-            className="h-1 rounded-full transition-all duration-300"
+            className="h-1 rounded-full transition-all duration-500 ease-out"
             style={{ 
               backgroundColor: stageColor,
-              width: `${Math.min(100, (deal.activities.length * 20))}%`
+              width: `${Math.min(100, (deal.activities.length * 20) + 20)}%`
             }}
           />
         </div>
