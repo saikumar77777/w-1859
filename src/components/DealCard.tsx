@@ -84,6 +84,19 @@ const DealCard: React.FC<DealCardProps> = ({ deal, stageColor, onUpdate }) => {
     }).format(amount);
   };
 
+  const formatDaysInStage = (days: number) => {
+    if (days === 0) return 'New in stage';
+    if (days === 1) return '1 day in stage';
+    return `${days} days in stage`;
+  };
+
+  const formatLastActivity = (activity: string) => {
+    if (!activity || activity === 'No recent activity') {
+      return 'No recent activity';
+    }
+    return activity;
+  };
+
   const handleCardClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -190,9 +203,11 @@ const DealCard: React.FC<DealCardProps> = ({ deal, stageColor, onUpdate }) => {
       <div className="flex items-center justify-between text-xs text-crm-text-secondary mb-3">
         <div className="flex items-center">
           <Clock className="w-3 h-3 mr-1" />
-          <span>{deal.daysInStage}d in stage</span>
+          <span>{formatDaysInStage(deal.daysInStage)}</span>
         </div>
-        <span className="transition-colors duration-200 hover:text-crm-text-white">{deal.lastActivity}</span>
+        <span className="transition-colors duration-200 hover:text-crm-text-white">
+          {formatLastActivity(deal.lastActivity)}
+        </span>
       </div>
 
       {/* Probability Progress Indicator */}

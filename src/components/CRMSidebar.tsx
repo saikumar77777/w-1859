@@ -1,75 +1,102 @@
 
 import React from 'react';
-import { NavLink } from 'react-router-dom';
-import { User, FileText, Circle, Bell, BarChart3, LogOut, TrendingUp } from 'lucide-react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { 
+  Home, 
+  Users, 
+  Handshake, 
+  MessageSquare, 
+  Bell, 
+  BarChart3, 
+  Settings,
+  LogOut,
+  ArrowLeft
+} from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 
 const CRMSidebar = () => {
-  const { signOut, user } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { signOut } = useAuth();
 
   const menuItems = [
-    { icon: Circle, label: 'Dashboard', path: '/' },
-    { icon: User, label: 'Contacts', path: '/contacts' },
-    { icon: FileText, label: 'Deals', path: '/deals' },
-    { icon: BarChart3, label: 'Analytics', path: '/deals-analytics' },
+    { icon: Home, label: 'Dashboard', path: '/' },
+    { icon: Handshake, label: 'Deals', path: '/deals' },
+    { icon: Users, label: 'Contacts', path: '/contacts' },
+    { icon: MessageSquare, label: 'Communications', path: '/communications' },
     { icon: Bell, label: 'Notifications', path: '/notifications' },
+    { icon: BarChart3, label: 'Reports', path: '/reports' },
+    { icon: Settings, label: 'Settings', path: '/settings' },
   ];
 
-  const handleSignOut = async () => {
-    await signOut();
+  const handleLogout = () => {
+    signOut();
+    navigate('/auth');
   };
 
-  return (
-    <div className="w-64 bg-crm-secondary h-screen border-r border-crm-tertiary p-4 flex flex-col">
-      <div className="mb-8">
-        <h1 className="text-xl font-semibold text-white mb-2">CRM Pro</h1>
-        <div className="w-12 h-1 bg-gradient-to-r from-crm-electric to-crm-emerald rounded-full"></div>
-      </div>
-      
-      <nav className="space-y-2 flex-1">
-        {menuItems.map((item) => {
-          const Icon = item.icon;
-          return (
-            <NavLink
-              key={item.path}
-              to={item.path}
-              className={({ isActive }) =>
-                `flex items-center px-4 py-3 text-gray-300 hover:text-white hover:bg-crm-tertiary transition-all duration-200 rounded-lg ${
-                  isActive ? 'bg-crm-electric text-white' : ''
-                }`
-              }
-            >
-              <Icon className="w-5 h-5 mr-3" />
-              <span className="font-medium">{item.label}</span>
-            </NavLink>
-          );
-        })}
-      </nav>
-      
-      <div className="mt-auto space-y-4">
-        {/* User info */}
-        <div className="bg-gradient-to-r from-crm-electric/20 to-crm-emerald/20 rounded-lg p-4 border border-crm-electric/30">
-          <div className="flex items-center space-x-3 mb-3">
-            <TrendingUp className="w-5 h-5 text-crm-electric" />
-            <div>
-              <h3 className="text-sm font-medium text-white">Sales Performance</h3>
-              <p className="text-xs text-gray-400">Track your pipeline growth</p>
-            </div>
-          </div>
-          <div className="text-xs text-gray-400">
-            Logged in as: {user?.email}
-          </div>
-        </div>
+  const handleBackToDeals = () => {
+    navigate('/deals');
+  };
 
-        {/* Logout button */}
+  const isOnDealDetailsPage = location.pathname.startsWith('/deals/') && location.pathname !== '/deals';
+
+  return (
+    <div className="w-64 bg-crm-secondary h-screen flex flex-col border-r border-crm-tertiary">
+      {/* Header */}
+      <div className="p-6 border-b border-crm-tertiary">
+        <h2 className="text-xl font-bold text-white">CRM Dashboard</h2>
+        <p className="text-sm text-crm-text-secondary">Sales & Customer Management</p>
+      </div>
+
+      {/* Navigation */}
+      <nav className="flex-1 p-4">
+        <ul className="space-y-2">
+          {menuItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = location.pathname === item.path;
+            
+            return (
+              <li key={item.path}>
+                <button
+                  onClick={() => navigate(item.path)}
+                  className={`w-full flex items-center px-4 py-3 rounded-lg text-left transition-all duration-200 hover:bg-crm-tertiary/50 ${
+                    isActive 
+                      ? 'bg-crm-electric text-white shadow-lg' 
+                      : 'text-crm-text-secondary hover:text-crm-text-white'
+                  }`}
+                >
+                  <Icon className="w-5 h-5 mr-3" />
+                  <span className="font-medium">{item.label}</span>
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      </nav>
+
+      {/* Bottom Actions */}
+      <div className="p-4 border-t border-crm-tertiary space-y-3">
+        {/* Back to Deals Button - Only show on deal detail pages */}
+        {isOnDealDetailsPage && (
+          <Button
+            onClick={handleBackToDeals}
+            variant="outline"
+            className="w-full bg-crm-tertiary border-crm-tertiary text-crm-text-white hover:bg-crm-tertiary/80 hover:text-white transition-all duration-200"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            <span className="font-medium">Back to Deals</span>
+          </Button>
+        )}
+        
+        {/* Logout Button */}
         <Button
-          onClick={handleSignOut}
+          onClick={handleLogout}
           variant="outline"
-          className="w-full border-crm-tertiary text-gray-300 hover:text-white hover:bg-crm-tertiary transition-all duration-200"
+          className="w-full bg-red-600/20 border-red-600/30 text-red-400 hover:bg-red-600/30 hover:text-red-300 hover:border-red-500/50 transition-all duration-200"
         >
           <LogOut className="w-4 h-4 mr-2" />
-          Logout
+          <span className="font-medium">Logout</span>
         </Button>
       </div>
     </div>

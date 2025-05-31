@@ -87,7 +87,7 @@ const DealKanbanBoard: React.FC<DealKanbanBoardProps> = ({ searchTerm = '', filt
 
   // Filter deals based on search and stage
   const filteredDeals = deals.filter(deal => {
-    const matchesSearch = searchTerm === '' || 
+    const matchesSearch = !searchTerm || 
       deal.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       (deal.company && deal.company.toLowerCase().includes(searchTerm.toLowerCase()));
     const matchesStage = filterStage === 'all' || deal.stage === filterStage;
@@ -167,7 +167,8 @@ const DealKanbanBoard: React.FC<DealKanbanBoardProps> = ({ searchTerm = '', filt
       const updateData: any = { 
         stage: targetStage,
         notes: updatedNotes,
-        days_in_stage: 0
+        days_in_stage: 0,
+        last_activity: `Moved to ${stageChangeDialog.toStage}`
       };
 
       if (probability !== undefined) {
