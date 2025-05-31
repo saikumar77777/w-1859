@@ -5,7 +5,6 @@ import {
   Home, 
   Users, 
   Handshake, 
-  MessageSquare, 
   Bell, 
   BarChart3, 
   Settings,
@@ -24,7 +23,6 @@ const CRMSidebar = () => {
     { icon: Home, label: 'Dashboard', path: '/' },
     { icon: Handshake, label: 'Deals', path: '/deals' },
     { icon: Users, label: 'Contacts', path: '/contacts' },
-    { icon: MessageSquare, label: 'Communications', path: '/communications' },
     { icon: Bell, label: 'Notifications', path: '/notifications' },
     { icon: BarChart3, label: 'Reports', path: '/reports' },
     { icon: Settings, label: 'Settings', path: '/settings' },
@@ -82,10 +80,10 @@ const CRMSidebar = () => {
           <Button
             onClick={handleBackToDeals}
             variant="outline"
-            className="w-full bg-crm-tertiary border-crm-tertiary text-crm-text-white hover:bg-crm-tertiary/80 hover:text-white transition-all duration-200"
+            className="w-full bg-crm-electric/20 border-crm-electric/50 text-white hover:bg-crm-electric/30 hover:border-crm-electric transition-all duration-200 font-medium"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
-            <span className="font-medium">Back to Deals</span>
+            <span>Back to Deals</span>
           </Button>
         )}
         
@@ -93,10 +91,10 @@ const CRMSidebar = () => {
         <Button
           onClick={handleLogout}
           variant="outline"
-          className="w-full bg-red-600/20 border-red-600/30 text-red-400 hover:bg-red-600/30 hover:text-red-300 hover:border-red-500/50 transition-all duration-200"
+          className="w-full bg-red-600/20 border-red-600/50 text-white hover:bg-red-600/30 hover:border-red-600 transition-all duration-200 font-medium"
         >
           <LogOut className="w-4 h-4 mr-2" />
-          <span className="font-medium">Logout</span>
+          <span>Logout</span>
         </Button>
       </div>
     </div>

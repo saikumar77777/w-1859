@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Plus } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useDeals } from '@/hooks/useDeals';
@@ -85,14 +84,18 @@ const DealKanbanBoard: React.FC<DealKanbanBoardProps> = ({ searchTerm = '', filt
     }
   ];
 
-  // Filter deals based on search and stage
-  const filteredDeals = deals.filter(deal => {
-    const matchesSearch = !searchTerm || 
-      deal.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (deal.company && deal.company.toLowerCase().includes(searchTerm.toLowerCase()));
-    const matchesStage = filterStage === 'all' || deal.stage === filterStage;
-    return matchesSearch && matchesStage;
-  });
+  // Filter deals based on search and stage with useMemo for performance
+  const filteredDeals = useMemo(() => {
+    console.log('Filtering deals with searchTerm:', searchTerm, 'filterStage:', filterStage);
+    return deals.filter(deal => {
+      const matchesSearch = !searchTerm || 
+        deal.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (deal.company && deal.company.toLowerCase().includes(searchTerm.toLowerCase()));
+      const matchesStage = filterStage === 'all' || deal.stage === filterStage;
+      console.log(`Deal ${deal.name}: searchMatch=${matchesSearch}, stageMatch=${matchesStage}`);
+      return matchesSearch && matchesStage;
+    });
+  }, [deals, searchTerm, filterStage]);
 
   const getDealsForStage = (stageId: string) => {
     return filteredDeals.filter(deal => deal.stage === stageId);

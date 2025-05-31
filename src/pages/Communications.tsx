@@ -1,17 +1,15 @@
 
 import React, { useState } from 'react';
 import CRMSidebar from '../components/CRMSidebar';
-import CommunicationHub from '../components/CommunicationHub';
 import LeadManagement from '../components/LeadManagement';
 import UserManagement from '../components/UserManagement';
 import ReportsAnalytics from '../components/ReportsAnalytics';
-import { MessageSquare, Users, UserCheck, BarChart3 } from 'lucide-react';
+import { Users, UserCheck, BarChart3 } from 'lucide-react';
 
 const Communications = () => {
-  const [activeTab, setActiveTab] = useState<'communications' | 'leads' | 'users' | 'reports'>('communications');
+  const [activeTab, setActiveTab] = useState<'leads' | 'users' | 'reports'>('leads');
 
   const tabs = [
-    { id: 'communications', label: 'Communications', icon: MessageSquare },
     { id: 'leads', label: 'Lead Management', icon: Users },
     { id: 'users', label: 'User Management', icon: UserCheck },
     { id: 'reports', label: 'Reports', icon: BarChart3 }
@@ -19,8 +17,6 @@ const Communications = () => {
 
   const renderContent = () => {
     switch (activeTab) {
-      case 'communications':
-        return <CommunicationHub />;
       case 'leads':
         return <LeadManagement />;
       case 'users':
@@ -28,7 +24,7 @@ const Communications = () => {
       case 'reports':
         return <ReportsAnalytics />;
       default:
-        return <CommunicationHub />;
+        return <LeadManagement />;
     }
   };
 

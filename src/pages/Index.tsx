@@ -9,7 +9,6 @@ import { useContacts } from '@/hooks/useContacts';
 import { useDeals } from '@/hooks/useDeals';
 import { useNotifications } from '@/hooks/useNotifications';
 import { Bell, Users, DollarSign, TrendingUp, Target, Calendar, BarChart3, Zap } from 'lucide-react';
-import { Progress } from '@/components/ui/progress';
 
 const Index = () => {
   const [activeView, setActiveView] = useState<'dashboard' | 'notifications'>('dashboard');
@@ -176,7 +175,7 @@ const Index = () => {
 
             {/* Quick Stats Section */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10">
-              {/* Pipeline Overview */}
+              {/* Pipeline Overview with improved progress bars */}
               <div className="lg:col-span-2 crm-card p-6 rounded-2xl border border-crm-tertiary">
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-xl font-semibold text-crm-text-white flex items-center">
@@ -188,24 +187,45 @@ const Index = () => {
                   </span>
                 </div>
                 
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-crm-text-secondary">Active Deals</span>
-                    <span className="text-crm-text-white font-medium">{activeDeals}</span>
+                <div className="space-y-6">
+                  <div>
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-crm-text-white font-medium">Active Deals</span>
+                      <span className="text-crm-electric font-bold text-lg">{activeDeals}</span>
+                    </div>
+                    <div className="w-full bg-crm-tertiary rounded-full h-3 overflow-hidden">
+                      <div 
+                        className="h-3 bg-gradient-to-r from-crm-electric to-blue-500 rounded-full transition-all duration-700 ease-out shadow-lg"
+                        style={{ width: `${Math.max((activeDeals / Math.max(totalDeals, 1)) * 100, 2)}%` }}
+                      />
+                    </div>
                   </div>
-                  <Progress value={(activeDeals / Math.max(totalDeals, 1)) * 100} className="h-2" />
                   
-                  <div className="flex items-center justify-between mt-4">
-                    <span className="text-crm-text-secondary">Won Deals</span>
-                    <span className="text-emerald-400 font-medium">{closedDeals}</span>
+                  <div>
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-crm-text-white font-medium">Won Deals</span>
+                      <span className="text-emerald-400 font-bold text-lg">{closedDeals}</span>
+                    </div>
+                    <div className="w-full bg-crm-tertiary rounded-full h-3 overflow-hidden">
+                      <div 
+                        className="h-3 bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full transition-all duration-700 ease-out shadow-lg"
+                        style={{ width: `${Math.max((closedDeals / Math.max(totalDeals, 1)) * 100, 2)}%` }}
+                      />
+                    </div>
                   </div>
-                  <Progress value={(closedDeals / Math.max(totalDeals, 1)) * 100} className="h-2" />
                   
-                  <div className="flex items-center justify-between mt-4">
-                    <span className="text-crm-text-secondary">Lost Deals</span>
-                    <span className="text-red-400 font-medium">{lostDeals}</span>
+                  <div>
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-crm-text-white font-medium">Lost Deals</span>
+                      <span className="text-red-400 font-bold text-lg">{lostDeals}</span>
+                    </div>
+                    <div className="w-full bg-crm-tertiary rounded-full h-3 overflow-hidden">
+                      <div 
+                        className="h-3 bg-gradient-to-r from-red-500 to-red-400 rounded-full transition-all duration-700 ease-out shadow-lg"
+                        style={{ width: `${Math.max((lostDeals / Math.max(totalDeals, 1)) * 100, 2)}%` }}
+                      />
+                    </div>
                   </div>
-                  <Progress value={(lostDeals / Math.max(totalDeals, 1)) * 100} className="h-2" />
                 </div>
               </div>
 
